@@ -52,12 +52,11 @@ use crate::stdlib::builtins_module_scope;
 use crate::types::diagnostic::{TypeCheckDiagnostic, TypeCheckDiagnostics};
 use crate::types::{
     bindings_ty, builtins_symbol_ty, declarations_ty, global_symbol_ty, symbol_ty,
-    typing_extensions_symbol_ty, BytesLiteralType, ClassType, FunctionType, KnownFunction,
-    StringLiteralType, Truthiness, TupleType, Type, TypeArrayDisplay, UnionType,
+    typing_extensions_symbol_ty, BytesLiteralType, ClassType, FunctionType, KnownClass,
+    KnownFunction, StringLiteralType, Truthiness, TupleType, Type, TypeArrayDisplay, UnionBuilder,
+    UnionType,
 };
 use crate::Db;
-
-use super::{KnownClass, UnionBuilder};
 
 /// Infer all types for a [`ScopeId`], including all definitions and expressions in that scope.
 /// Use when checking a scope, or needing to provide a type for an arbitrary expression in the
@@ -2815,7 +2814,7 @@ impl<'db> TypeInferenceBuilder<'db> {
 
         // https://docs.python.org/3/reference/expressions.html#comparisons
         // > Formally, if `a, b, c, …, y, z` are expressions and `op1, op2, …, opN` are comparison
-        // > operators, then `a op1 b op2 c ... y opN z` is equivalent to a `op1 b and b op2 c and
+        // > operators, then `a op1 b op2 c ... y opN z` is equivalent to `a op1 b and b op2 c and
         // ... > y opN z`, except that each expression is evaluated at most once.
         //
         // As some operators (==, !=, <, <=, >, >=) *can* return an arbitrary type, the logic below
@@ -2901,6 +2900,30 @@ impl<'db> TypeInferenceBuilder<'db> {
                 Ok(builder.build())
             }
 
+            (Type::Intersection(intersection), other) => {
+                for pos in intersection.positive(self.db) {
+                    let result = self.infer_binary_type_comparison(*pos, op, other)?;
+                    if let Type::BooleanLiteral(b) = result {
+                        return Ok(Type::BooleanLiteral(b));
+                    }
+                }
+
+                for neg in intersection.negative(self.db) {
+                    if let Ok(Type::BooleanLiteral(true)) =
+                        self.infer_binary_type_comparison(*neg, op, other)
+                    {
+                        return Ok(Type::BooleanLiteral(false));
+                    }
+                }
+
+                // TODO
+                self.infer_binary_type_comparison(
+                    KnownClass::Object.to_instance(self.db),
+                    op,
+                    KnownClass::Object.to_instance(self.db),
+                )
+            }
+
             (Type::IntLiteral(n), Type::IntLiteral(m)) => match op {
                 ast::CmpOp::Eq => Ok(Type::BooleanLiteral(n == m)),
                 ast::CmpOp::NotEq => Ok(Type::BooleanLiteral(n != m)),
@@ -2981,6 +3004,10 @@ impl<'db> TypeInferenceBuilder<'db> {
                         }
                     }
                 }
+            }
+            (Type::StringLiteral(..), Type::LiteralString)
+            | (Type::LiteralString, Type::StringLiteral(..)) => {
+                Ok(KnownClass::Bool.to_instance(self.db))
             }
             (Type::StringLiteral(_), _) => {
                 self.infer_binary_type_comparison(KnownClass::Str.to_instance(self.db), op, right)
