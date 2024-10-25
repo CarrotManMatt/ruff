@@ -335,6 +335,20 @@ long_unmergable_string_with_pragma = (
  annotated_variable: Literal["fakse_literal"] = (
      "This is a large string that has a type annotation attached to it. A type annotation should NOT stop a long string from being wrapped."
  )
+@@ -271,7 +265,12 @@
+ 
+ func_call(short_string=("Hi" " there."))
+ 
+-raw_strings = r"Don't" " get" r" merged" " unless they are all raw."
++raw_strings = (
++    r"Don't"
++    " get"
++    r" merged"
++    " unless they are all raw."
++)
+ 
+ 
+ def foo():
 ```
 
 ## Ruff Output
@@ -607,7 +621,12 @@ short_string = "Hi" " there."
 
 func_call(short_string=("Hi" " there."))
 
-raw_strings = r"Don't" " get" r" merged" " unless they are all raw."
+raw_strings = (
+    r"Don't"
+    " get"
+    r" merged"
+    " unless they are all raw."
+)
 
 
 def foo():

@@ -74,6 +74,16 @@ impl Format<PyFormatContext<'_>> for FormatImplicitConcatenatedStringExpanded<'_
         let comments = f.context().comments().clone();
         let quoting = self.string.quoting(&f.context().locator());
 
+        // TODO: This should be set to true whenever `FormatImplicitConcatenatedStringFlat::new` returns `None`.
+
+        if self
+            .string
+            .parts()
+            .any(|part| part.flags().is_raw_string() || part.flags().is_triple_quoted())
+        {
+            expand_parent().fmt(f)?;
+        }
+
         let join_implicit_concatenated_string_enabled =
             is_join_implicit_concatenated_string_enabled(f.context());
         let mut joiner = f.join_with(in_parentheses_only_soft_line_break_or_space());

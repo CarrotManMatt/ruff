@@ -781,7 +781,7 @@ log.info(f"""Skipping: {'a' == 'b'} {desc['ms_name']} {money=} {dte=} {pos_share
      z,
  )
  
-@@ -408,50 +321,27 @@
+@@ -408,50 +321,32 @@
      + CONCATENATED
      + "using the '+' operator."
  )
@@ -818,7 +818,13 @@ log.info(f"""Skipping: {'a' == 'b'} {desc['ms_name']} {money=} {dte=} {pos_share
 -func_call(short_string="Hi there.")
 +func_call(short_string=("Hi there."))
  
- raw_strings = r"Don't" " get" r" merged" " unless they are all raw."
+-raw_strings = r"Don't" " get" r" merged" " unless they are all raw."
++raw_strings = (
++    r"Don't"
++    " get"
++    r" merged"
++    " unless they are all raw."
++)
  
  
  def foo():
@@ -840,7 +846,7 @@ log.info(f"""Skipping: {'a' == 'b'} {desc['ms_name']} {money=} {dte=} {pos_share
  
  long_unmergable_string_with_pragma = (
      "This is a really long string that can't be merged because it has a likely pragma at the end"  # type: ignore
-@@ -468,51 +358,24 @@
+@@ -468,51 +363,24 @@
      " of it."
  )
  
@@ -901,7 +907,7 @@ log.info(f"""Skipping: {'a' == 'b'} {desc['ms_name']} {money=} {dte=} {pos_share
  )
  
  dict_with_lambda_values = {
-@@ -524,65 +387,58 @@
+@@ -524,65 +392,58 @@
  
  # Complex string concatenations with a method call in the middle.
  code = (
@@ -985,7 +991,7 @@ log.info(f"""Skipping: {'a' == 'b'} {desc['ms_name']} {money=} {dte=} {pos_share
  )
  
  log.info(
-@@ -590,5 +446,5 @@
+@@ -590,5 +451,5 @@
  )
  
  log.info(
@@ -1333,7 +1339,12 @@ short_string = "Hi there."
 
 func_call(short_string=("Hi there."))
 
-raw_strings = r"Don't" " get" r" merged" " unless they are all raw."
+raw_strings = (
+    r"Don't"
+    " get"
+    r" merged"
+    " unless they are all raw."
+)
 
 
 def foo():

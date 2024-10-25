@@ -432,7 +432,10 @@ result_f = (
 # https://github.com/astral-sh/ruff/issues/6841
 x = f"""a{""}b"""
 y = f'''c{1}d"""e'''
-z = f"""a{""}b""" f'''c{1}d"""e'''
+z = (
+    f"""a{""}b"""
+    f'''c{1}d"""e'''
+)
 
 # F-String formatting test cases (Preview)
 
@@ -807,7 +810,10 @@ result_f = (
 # https://github.com/astral-sh/ruff/issues/6841
 x = f"""a{""}b"""
 y = f'''c{1}d"""e'''
-z = f"""a{""}b""" f'''c{1}d"""e'''
+z = (
+    f"""a{""}b"""
+    f'''c{1}d"""e'''
+)
 
 # F-String formatting test cases (Preview)
 
@@ -1130,7 +1136,7 @@ _ = (
  )
  
  (
-@@ -67,29 +67,31 @@
+@@ -70,29 +70,31 @@
  x = f"{a}"
  x = f"{
      a = }"
@@ -1170,7 +1176,7 @@ _ = (
  x = f"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa { # comment 9
                                               "bbbbbbbbbbbbbbbbbbbbbbbbbbbbb" = } ccccccccccccccc"
  x = f"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa { # comment 9
-@@ -98,35 +100,41 @@
+@@ -101,35 +103,41 @@
  # Multiple larger expressions which exceeds the line length limit. Here, we need to decide
  # whether to split at the first or second expression. This should work similarly to the
  # assignment statement formatting where we split from right to left in preview mode.
@@ -1228,7 +1234,7 @@ _ = (
  x = f"{    # comment 13
      {'x': 1, 'y': 2} = }"
  # But, if there's a format specifier or a conversion flag then we don't need to add
-@@ -141,7 +149,11 @@
+@@ -144,7 +152,11 @@
  }"
  # And, split the expression itself because it exceeds the line length.
  xxxxxxx = f"{
@@ -1241,7 +1247,7 @@ _ = (
  }"
  
  #############################################################################################
-@@ -151,7 +163,7 @@
+@@ -154,7 +166,7 @@
  f'foo "bar" {x}'
  f'foo "bar" {x}'
  f"foo 'bar' {x}"
@@ -1250,7 +1256,7 @@ _ = (
  
  f"single quoted '{x}' double quoted \"{x}\""  # Same number of quotes => use preferred quote style
  f'single quote \' {x} double quoted "{x}"'  # More double quotes => use single quotes
-@@ -163,23 +175,23 @@
+@@ -166,23 +178,23 @@
  
  # Here, the formatter will remove the escapes which is correct because they aren't allowed
  # pre 3.12. This means we can assume that the f-string is used in the context of 3.12.
@@ -1279,7 +1285,7 @@ _ = (
  # But if the inner string is also triple-quoted then we should preserve the existing quotes.
  f"""test {'''inner'''}"""
  
-@@ -190,7 +202,7 @@
+@@ -193,7 +205,7 @@
  f'{f"""other " """}'
  
  # Not valid Pre 3.12
@@ -1288,7 +1294,7 @@ _ = (
  f"""test {f'''inner {"""inner inner"""}'''}"""
  
  # Magic trailing comma
-@@ -202,63 +214,66 @@
+@@ -205,63 +217,66 @@
  f"aaaaaaa {['aaaaaaaaaaaaaaa', 'bbbbbbbbbbbbb', 'ccccccccccccccccc', 'ddddddddddddddd', 'eeeeeeeeeeeeee']} aaaaaaa"
  
  # And, if the trailing comma is already present, we still need to remove it.
@@ -1383,7 +1389,7 @@ _ = (
       # comment} cccccccccc"""
  
  # Conversion flags
-@@ -266,24 +281,21 @@
+@@ -269,24 +284,21 @@
  # This is not a valid Python code because of the additional whitespace between the `!`
  # and conversion type. But, our parser isn't strict about this. This should probably be
  # removed once we have a strict parser.
@@ -1415,7 +1421,7 @@ _ = (
  
  x = f"""
  {              # comment 22
-@@ -292,19 +304,19 @@
+@@ -295,19 +307,19 @@
  
  # Here, the debug expression is in a nested f-string so we should start preserving
  # whitespaces from that point onwards. This means we should format the outer f-string.
@@ -1443,7 +1449,7 @@ _ = (
      # comment 27
      # comment 28
  } woah {x}"
-@@ -318,27 +330,27 @@
+@@ -321,27 +333,27 @@
          if indent2:
              foo = f"""hello world
  hello {

@@ -944,12 +944,12 @@ s = f'Lorem Ipsum is simply dummy text of the printing and typesetting industry:
  print(
 -    "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam."
 -    f" {[f'{i}' for i in range(10)]}"
--)
++    f"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam. {[f'{i}' for i in range(10)]}"
+ )
 -x = (
 -    "This is a long string which contains an f-expr that should not split"
 -    f" {{{[i for i in range(5)]}}}."
-+    f"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam. {[f'{i}' for i in range(10)]}"
- )
+-)
 +x = f"This is a long string which contains an f-expr that should not split {{{[i for i in range(5)]}}}."
  
  # The parens should NOT be removed in this case.
@@ -1095,7 +1095,7 @@ s = f'Lorem Ipsum is simply dummy text of the printing and typesetting industry:
      "6. Click on Create Credential at the top."
      '7. At the top click the link for "API key".'
      "8. No application restrictions are needed. Click Create at the bottom."
-@@ -608,7 +572,7 @@
+@@ -608,60 +572,46 @@
  
  # It shouldn't matter if the string prefixes are capitalized.
  temp_msg = (
@@ -1104,9 +1104,14 @@ s = f'Lorem Ipsum is simply dummy text of the printing and typesetting industry:
      f"{balance: <{bal_len + 5}} "
      f"<<{author.display_name}>>\n"
  )
-@@ -617,51 +581,34 @@
  
- welcome_to_programming = R"hello," R" world!"
+ fstring = f"We have to remember to escape {braces}. Like {{these}}. But not {this}."
+ 
+-welcome_to_programming = R"hello," R" world!"
++welcome_to_programming = (
++    R"hello,"
++    R" world!"
++)
  
 -fstring = (
 -    f"f-strings definitely make things more {difficult} than they need to be for"
@@ -1170,7 +1175,7 @@ s = f'Lorem Ipsum is simply dummy text of the printing and typesetting industry:
  )
  
  # Regression test for https://github.com/psf/black/issues/3455.
-@@ -674,7 +621,4 @@
+@@ -674,7 +624,4 @@
  # Regression test for https://github.com/psf/black/issues/3506.
  s = f"With single quote: '  {my_dict['foo']} With double quote: \"  {my_dict['bar']}"
  
@@ -1765,7 +1770,10 @@ temp_msg = (
 
 fstring = f"We have to remember to escape {braces}. Like {{these}}. But not {this}."
 
-welcome_to_programming = R"hello," R" world!"
+welcome_to_programming = (
+    R"hello,"
+    R" world!"
+)
 
 fstring = f"f-strings definitely make things more {difficult} than they need to be for {{black}}. But boy they sure are handy. The problem is that some lines will need to have the 'f' whereas others do not. This {line}, for example, needs one."
 
