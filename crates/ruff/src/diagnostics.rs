@@ -16,7 +16,6 @@ use ruff_diagnostics::Diagnostic;
 use ruff_linter::codes::Rule;
 use ruff_linter::linter::{lint_fix, lint_only, FixTable, FixerResult, LinterResult, ParseSource};
 use ruff_linter::message::{Message, SyntaxErrorMessage};
-use ruff_linter::pyproject_toml::lint_pyproject_toml;
 use ruff_linter::settings::types::UnsafeFixes;
 use ruff_linter::settings::{flags, LinterSettings};
 use ruff_linter::source_kind::{SourceError, SourceKind};
@@ -225,7 +224,9 @@ pub(crate) fn lint_path(
         Some(source_type) => source_type,
         None => match SourceType::from(path) {
             SourceType::Toml(TomlSourceType::Pyproject) => {
-                let messages = if settings
+                let messages = if cfg!(target_arch = "wasm32") {
+                    Vec::new()
+                } else if settings
                     .rules
                     .iter_enabled()
                     .any(|rule_code| rule_code.lint_source().is_pyproject_toml())
@@ -238,10 +239,11 @@ pub(crate) fn lint_path(
                     };
                     let source_file =
                         SourceFileBuilder::new(path.to_string_lossy(), contents).finish();
-                    lint_pyproject_toml(source_file, settings)
+                    ruff_linter::pyproject_toml::lint_pyproject_toml(source_file, settings)
                 } else {
                     vec![]
                 };
+
                 return Ok(Diagnostics {
                     messages,
                     ..Diagnostics::default()

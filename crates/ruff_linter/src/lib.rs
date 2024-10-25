@@ -31,6 +31,7 @@ pub mod logging;
 pub mod message;
 mod noqa;
 pub mod packaging;
+#[cfg(not(target_arch = "wasm32"))]
 pub mod pyproject_toml;
 pub mod registry;
 mod renamer;
